@@ -16,10 +16,19 @@ class MoviesController < ApplicationController
     @checked_ratings = params[:ratings]
     @sort_by = params[:sort_by]
     #corner case?
-    if session[:ratings].present? and params[:sort].nil?
-      redirect_to movies_path(sort: session[:sort], ratings: params[:ratings])
-    elsif session[:ratings].present? and params[:ratings].nil?
-      redrect_to movies_path(sort: params[:sort], ratings: session[:ratings])
+    @sort_tf = false
+    @ratings_tf = false
+    if session[:sort].present? && params[:sort].nil?
+      @sort_tf = true
+    elsif session[:ratings].present? && params[:ratings].nil?
+      @ratings_tf = true
+    end
+    if @sort_tf && @ratings_tf
+      redirect_to movies_path(sort: session[:sort], ratings: session[:ratings]) and return
+    elsif @sort_tf
+      redirect_to movies_path(sort: session[:sort], ratings: params[:ratings]) and return
+    elsif @ratings_tf
+      redirect_to movies_path(sort: params[:sort], ratings: session[:ratings]) and return
     end
     #weird session logic
     if @checked_ratings.nil?
