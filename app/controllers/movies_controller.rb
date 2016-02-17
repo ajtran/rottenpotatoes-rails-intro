@@ -14,6 +14,14 @@ class MoviesController < ApplicationController
     @movies = Movie.all
     @all_ratings = Movie.all_ratings
     @checked_ratings = params[:ratings]
+    @sort_by = params[:sort_by]
+    #corner case?
+    if session[:ratings].present? and params[:sort].nil?
+      redirect_to movies_path(sort: session[:sort], ratings: params[:ratings])
+    elsif session[:ratings].present? and params[:ratings].nil?
+      redrect_to movies_path(sort: params[:sort], ratings: session[:ratings])
+    end
+    #weird session logic
     if @checked_ratings.nil?
       if session[:ratings].present?
         @checked_ratings = session[:ratings]
@@ -24,17 +32,7 @@ class MoviesController < ApplicationController
     else
       session[:ratings] = @checked_ratings
     end
-    # if @checked_ratings.present?
-    #   session[:ratings] = @checked_ratings
-    # if session[:ratings].present?
-    #   @checked_ratings = session[:ratings]
-    # end
-    # gotta do something here....
-    # if @checked_ratings.present?
-    @movies = @movies.where(rating: @checked_ratings.keys)
-    # end
-    # saving the sort in session
-    @sort_by = params[:sort_by]
+    # weird session logic
     if @sort_by.nil?
       if session[:sort_by].present?
         @sort_by = session[:sort_by]
@@ -42,7 +40,8 @@ class MoviesController < ApplicationController
     else
       session[:sort_by] = @sort_by
     end
-    # actual sorting
+    # actual work
+    @movies = @movies.where(rating: @checked_ratings.keys)
     if @sort_by == "title"
       @movies = @movies.order(title: :asc)
     elsif @sort_by == "release_date"
