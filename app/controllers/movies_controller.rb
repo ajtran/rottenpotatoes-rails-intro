@@ -13,8 +13,10 @@ class MoviesController < ApplicationController
   def index
     @movies = Movie.all
     @all_ratings = Movie.all_ratings
-    # filter
     @checked_ratings = params[:ratings]
+    if @checked_ratings.nil?
+      @checked_ratings = Hash[@all_ratings.map {|x| [x, 1]}]
+    end
     # if @checked_ratings.present?
     #   session[:ratings] = @checked_ratings
     # elsif session[:ratings].present?
