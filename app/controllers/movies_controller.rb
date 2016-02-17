@@ -18,10 +18,10 @@ class MoviesController < ApplicationController
       @checked_ratings = Hash[@all_ratings.map {|x| [x, 1]}]
     end
     # if @checked_ratings.present?
-    #   session[:ratings] = @checked_ratings
-    # elsif session[:ratings].present?
-    #   @checked_ratings = session[:ratings]
-    # end
+    session[:ratings] = @checked_ratings
+    if session[:ratings].present?
+      @checked_ratings = session[:ratings]
+    end
     # gotta do something here....
     if @checked_ratings.present?
       @movies = @movies.where(rating: @checked_ratings.keys)
@@ -29,10 +29,10 @@ class MoviesController < ApplicationController
     # saving the sort in session
     @sort_by = params[:sort_by]
     # if @sort_by.present?
-    #   session[:sort_by] = @sort_by
-    # elsif session[:sort_by].present?
-    #   @sort_by = session[:sort_by]
-    # end
+    session[:sort_by] = @sort_by
+    if session[:sort_by].present?
+      @sort_by = session[:sort_by]
+    end
     # actual sorting
     if @sort_by == "title"
       @movies = @movies.order(title: :asc)
