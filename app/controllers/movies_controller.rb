@@ -13,11 +13,25 @@ class MoviesController < ApplicationController
   def index
     @movies = Movie.all
     @all_ratings = Movie.all_ratings
-    @checked_ratings = params[:ratings].present? ? params[:ratings] : {}
-    if not @checked_ratings == {}
+    # filter
+    @checked_ratings = params[:ratings]
+    if @checked_ratings.present?
+      session[:ratings] = @checked_ratings
+    elsif session[:ratings].present?
+      @checked_ratings = session[:ratings]
+    end
+    # gotta do something here....
+    if @checked_ratings.present?
       @movies = @movies.where(rating: @checked_ratings.keys)
     end
+    # saving the sort in session
     @sort_by = params[:sort_by]
+    if @sort_by.present?
+      session[:sort_by] = @sort_by
+    elsif session[:sort_by].present?
+      @sort_by = session[:sort_by]
+    end
+    # actual sorting
     if @sort_by == "title"
       @movies = @movies.order(title: :asc)
     elsif @sort_by == "release_date"
